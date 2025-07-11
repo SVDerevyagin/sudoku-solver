@@ -66,3 +66,53 @@ The `Board` type is just an `Array` of `Cell`s wrapped in a `newtype`
 ```haskell
 newtype Board = Board (Array (Row, Col) Cell)
 ```
+
+## `Sudoku.Utils` module
+
+### Printing a `Board`
+
+For testing I need to print the `Board` on screen. The printing function is pretty obvious
+
+```haskell
+printBoard :: Board -> IO ()
+printBoard = putStrLn . renderBoard
+```
+
+Here `renderBoard` is a function that returns a human-readable string representing a `Board`.
+
+```haskell
+renderBoard :: Board -> String
+```
+
+Rendering a `Board`:
+
+1. Render every row.
+2. Split rendered rows into chunks of size 3.
+3. Intercalate the row separator between chunks.
+
+Rendering a row:
+
+1. Render every cell.
+2. Split rendered cells into chunks of size 3.
+3. Intercalate the column separator between chunks.
+
+Rendering a cell: 
+
+1. `show . toDigit`.
+2. Use SGR codes (`ansi-terminal` package) to indicate whether the `Cell` is a `Given` or a `Written`.
+
+
+### Checking correctness
+
+The function that checks if Sudoku rules are satisfied is
+
+```haskell
+sudokuRules :: Board -> Bool
+```
+
+It just calls three almost identical functions: `rowsAreCorrect`, `colsAreCorrect`, `blocksAreCorrect`.
+Each of them uses helper function `checkAll` with `rowIsCorrect`, `colIsCorrect`, `blockIsCorrect`.
+
+Helper function `checkAll` is just a specialized wrapper around standard function `all`.
+
+Each of the functions `_IsCorrect` checks if all non-empty cells have unique values.

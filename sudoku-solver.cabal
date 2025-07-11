@@ -27,6 +27,7 @@ library
   exposed-modules:
       Sudoku
       Sudoku.Types
+      Sudoku.Utils
   other-modules:
       Paths_sudoku_solver
   autogen-modules:
@@ -35,12 +36,13 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      array >=0.5.8 && <0.6
+      ansi-terminal ==1.1.*
+    , array >=0.5.8 && <0.6
     , base >=4.7 && <5
     , finite-typelits >=0.2.1 && <0.3
   default-language: Haskell2010
 
-executable sudoku-solver-exe
+executable sudoku-solver
   main-is: Main.hs
   other-modules:
       Paths_sudoku_solver

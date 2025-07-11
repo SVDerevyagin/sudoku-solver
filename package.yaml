@@ -37,6 +37,8 @@ ghc-options:
 
 library:
   source-dirs: src
+  dependencies:
+  - ansi-terminal >= 1.1 && < 1.2
 
 executables:
   sudoku-solver:

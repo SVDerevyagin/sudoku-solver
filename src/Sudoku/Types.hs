@@ -48,6 +48,9 @@ data Cell = EmptyCell            -- ^ The cell is empty
           | Written CellValue    -- ^ The value is written by the player
           deriving (Show, Eq)
 
+instance Ord Cell where
+  compare x y = compare (getCellValue x) (getCellValue y)
+
 -- | Checks if a cell is empty
 isCellEmpty :: Cell -> Bool
 isCellEmpty EmptyCell = True
@@ -98,16 +101,16 @@ rowCells (Board b) row = [b ! (row, col) | col <- [minBound .. maxBound]]
 colCells :: Board -> Col -> [Cell]
 colCells (Board b) col = [b ! (row, col) | row <- [minBound .. maxBound]]
 
--- | Gets all cells from a 3×3 block containing (@row@, @col@)
-blockCells :: Board -> Row -> Col -> [Cell]
-blockCells (Board b) row col =
-  [ b ! (r, c)
+-- | Gets all cells from a 3×3 block
+blockCells :: Board -> Block -> [Cell]
+blockCells (Board b) block =
+  [ b ! (r,c)
   | r <- [baseRow .. baseRow+2]
   , c <- [baseCol .. baseCol+2]
   ]
   where
-    baseRow = finite $ 3 * (getFinite row `div` 3)
-    baseCol = finite $ 3 * (getFinite col `div` 3)
+    baseRow = 3 * (block `div` 3)
+    baseCol = 3 * (block `mod` 3)
 
 -- | Gets the value of a cell
 getCell :: Board -> Row -> Col -> Maybe CellValue

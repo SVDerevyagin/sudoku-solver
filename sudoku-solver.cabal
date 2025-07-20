@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Sudoku
+      Sudoku.Solver
       Sudoku.Types
       Sudoku.Utils
   other-modules:

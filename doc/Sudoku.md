@@ -116,3 +116,38 @@ Each of them uses helper function `checkAll` with `rowIsCorrect`, `colIsCorrect`
 Helper function `checkAll` is just a specialized wrapper around standard function `all`.
 
 Each of the functions `_IsCorrect` checks if all non-empty cells have unique values.
+
+### Miscellaneous
+
+Function
+```haskell
+findIndex :: Board -> (Cell -> Bool) -> Maybe (Row, Col)
+```
+finds an element that satisfies a condition.
+
+Function
+```haskell
+findIndices :: Board -> (Cell -> Bool) -> [(Row, Col)]
+```
+finds all elements that satisfy a condition.
+
+Function
+```haskell
+possibleValues :: Board -> (Row, Col) -> [CellValue]
+```
+returns all values allowed in a cell.
+
+Function
+```haskell
+emptyCellsAmount :: Board -> Int
+```
+calculates the amount of empty cells in a puzzle.
+
+
+## `Sudoku.Solver` module
+
+The algorithm:
+
+1. Find an empty cell
+2. Fill the empty cell with every possible values (creates a list of `Board`s)
+3. Repeat for all new `Board`s 

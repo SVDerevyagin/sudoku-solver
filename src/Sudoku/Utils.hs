@@ -1,16 +1,25 @@
 {-# LANGUAGE DataKinds #-}
 
+{-|
+Module: Sudoku.Utils
+Description: Utility functions for testing and solving
+
+Utility functions for testing and solving
+-}
 module Sudoku.Utils
   ( printBoard
   , sudokuRules
+  , findIndex, possibleValues
+  , emptyCellsAmount
   ) where
 
 import Data.Finite (Finite)
-import Data.List (intercalate, sort)
-import Data.Maybe (catMaybes)
+import Data.List (intercalate, sort, (\\))
+import Data.Maybe (catMaybes, listToMaybe, mapMaybe)
 import System.Console.ANSI (Color(..), SGR(..), ConsoleLayer(..), ColorIntensity (..), setSGRCode)
 
-import Sudoku.Types (Board, Row, Col, Block, Cell(..), toDigit, rowCells, blockCells, colCells)
+import Sudoku.Types (Board(..), Row, Col, Block, Cell(..), toDigit, rowCells, blockCells, colCells, CellValue, getCellValue, isCellEmpty)
+import Data.Array (assocs)
 
 -- | Print a 'Board' on screen
 printBoard :: Board -> IO ()
@@ -123,3 +132,32 @@ sudokuRules :: Board -> Bool
 sudokuRules b = rowsAreCorrect b
              && colsAreCorrect b
              && blocksAreCorrect b
+
+-- | Finds an element in a 'Board' that satisfies a condition
+findIndex :: Board
+          -> (Cell -> Bool)  -- ^ the condition
+          -> Maybe (Row, Col)
+findIndex (Board arr) f = listToMaybe [ i | (i, x) <- assocs arr
+                                          , f x
+                                      ]
+
+-- | Finds all elements in a 'Board' that satisfy a condition
+findIndices :: Board
+            -> (Cell -> Bool)  -- ^ the condition
+            -> [(Row, Col)]
+findIndices (Board arr) f = [ i | (i, x) <- assocs arr
+                                , f x
+                            ]
+
+-- | Returns all possible values that could be placed at ('Row', 'Cell')
+possibleValues :: Board -> (Row, Col) -> [CellValue]
+possibleValues b (r,c) = [0..8] \\ used
+  where
+    row = rowCells b r
+    col = colCells b c
+    block = blockCells b (3*(r`div`3) + c`div`3)
+    used = mapMaybe getCellValue $ row ++ col ++ block
+
+-- | Returns the amount of empty cells
+emptyCellsAmount :: Board -> Int
+emptyCellsAmount = length . (`findIndices` isCellEmpty)

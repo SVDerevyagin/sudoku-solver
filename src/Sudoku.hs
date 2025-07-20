@@ -8,6 +8,7 @@ module Sudoku
   , impossibleBoard
   ) where
 
+import Sudoku.Solver
 import Sudoku.Types
 import Sudoku.Utils
 

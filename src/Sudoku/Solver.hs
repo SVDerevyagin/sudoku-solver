@@ -32,7 +32,7 @@ solvingIteration n bs
 
 -- | Solves a Sudoku puzzle, returns all possible solutions
 solveAll :: Board -> [Board]
-solveAll b = solvingIteration (emptyCellsAmount b) [b]
+solveAll b = filter sudokuRules $ solvingIteration (emptyCellsAmount b) [b]
 
 -- | Solves a Sudoku puzzle
 solve :: Board -> Either String Board

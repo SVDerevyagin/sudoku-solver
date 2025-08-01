@@ -42,7 +42,7 @@ library
     , array >=0.5.8 && <0.6
     , base >=4.7 && <5
     , finite-typelits >=0.2.1 && <0.3
-    , random ==1.3.*
+    , random ==1.2.*
   default-language: Haskell2010
 
 executable sudoku-solver
@@ -72,8 +72,11 @@ test-suite sudoku-solver-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      array >=0.5.8 && <0.6
+      QuickCheck
+    , array >=0.5.8 && <0.6
     , base >=4.7 && <5
     , finite-typelits >=0.2.1 && <0.3
+    , hspec
+    , random
     , sudoku-solver
   default-language: Haskell2010

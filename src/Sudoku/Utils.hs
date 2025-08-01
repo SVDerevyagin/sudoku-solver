@@ -19,7 +19,8 @@ import Data.List (intercalate, sort, (\\))
 import Data.Maybe (catMaybes, listToMaybe, mapMaybe)
 import System.Console.ANSI (Color(..), SGR(..), ConsoleLayer(..), ColorIntensity (..), setSGRCode)
 
-import Sudoku.Types (Board(..), Row, Col, Block, Cell(..), toDigit, rowCells, blockCells, colCells, CellValue, getCellValue, isCellEmpty)
+import Sudoku.Types ( Board(..), Row, Col, Block, Cell(..), CellValue
+                    , toDigit, rowCells, blockCells, colCells, getCellValue, isCellEmpty, getCellValue)
 import Data.Array (assocs)
 import System.Random (RandomGen(..), Random (randomR))
 
@@ -107,7 +108,7 @@ catEmpties (c        :cs) = c:catEmpties cs
 
 -- | Checks if a row is correct
 rowIsCorrect :: Board -> Row -> Bool
-rowIsCorrect b r = isListUnique $ catEmpties $ rowCells b r
+rowIsCorrect b r = isListUnique $ map getCellValue $ catEmpties $ rowCells b r
 
 -- | Checks if all rows are correct
 rowsAreCorrect :: Board -> Bool
@@ -115,7 +116,7 @@ rowsAreCorrect = checkAll rowIsCorrect
 
 -- | Checks if a column is correct
 colIsCorrect :: Board -> Col -> Bool
-colIsCorrect b r = isListUnique $ catEmpties $ colCells b r
+colIsCorrect b r = isListUnique $ map getCellValue $ catEmpties $ colCells b r
 
 -- | Checks if all columns are correct
 colsAreCorrect :: Board -> Bool
@@ -123,7 +124,7 @@ colsAreCorrect = checkAll colIsCorrect
 
 -- | Checks if a block is correct
 blockIsCorrect :: Board -> Block -> Bool
-blockIsCorrect b r = isListUnique $ catEmpties $ blockCells b r
+blockIsCorrect b r = isListUnique $ map getCellValue $ catEmpties $ blockCells b r
 
 -- | Checks if all blocks are correct
 blocksAreCorrect :: Board -> Bool

@@ -10,15 +10,14 @@ module Sudoku.Generator
   ( generateEasyBoard
   , generateMediumBoard
   , generateHardBoard
+  , randomBoard, removeNCells
   ) where
 
-import Sudoku.Types (Board(..), isCellEmpty, fillCell, Row, Col, Cell(..), CellValue, eraseCell, isCellNotEmpty, deleteCell)
-import Sudoku.Utils (findIndices, randomElement, shuffle, possibleValues, printBoard, findIndex, emptyCellsAmount)
+import Sudoku.Types (Board(..), Cell (..), fillCell, isCellEmpty, isCellNotEmpty, deleteCell)
+import Sudoku.Utils (findIndices, findIndex, shuffle, possibleValues, emptyCellsAmount)
 import Sudoku.Solver (solvable)
-import System.Random
+import System.Random (RandomGen(..), Random(..))
 import Data.Array (listArray)
-import System.Random.Stateful (RandomGenM(applyRandomGenM))
-import Data.Array.Base (genArray)
 
 
 -- | Empty board, generating a new puzzle starts from filling up this
@@ -83,25 +82,25 @@ removeMaxCells b gen = (foldr go b nonEmpty, g1)
                     else board
 
 -- | Generates a Board with at least n hints
-generateBoardWithAtLeastNHints :: Int -> StdGen -> (Board, StdGen)
+generateBoardWithAtLeastNHints :: RandomGen gen => Int -> gen -> (Board, gen)
 generateBoardWithAtLeastNHints n gen = removeNCells (81-n) b g1
   where
     (b, g1) = randomBoard gen
 
 -- | Generates an easy puzzle
-generateEasyBoard :: StdGen -> (Board, StdGen)
+generateEasyBoard :: RandomGen gen => gen -> (Board, gen)
 generateEasyBoard gen = generateBoardWithAtLeastNHints n g
   where
     (n, g) = randomR (36, 45) gen
 
 -- | Generates a medium puzzle
-generateMediumBoard :: StdGen -> (Board, StdGen)
+generateMediumBoard :: RandomGen gen => gen -> (Board, gen)
 generateMediumBoard gen = generateBoardWithAtLeastNHints n g
   where
     (n, g) = randomR (27, 35) gen
 
 -- | Generates a hard puzzle
-generateHardBoard :: StdGen -> (Board, StdGen)
+generateHardBoard :: RandomGen gen => gen -> (Board, gen)
 generateHardBoard gen = removeMaxCells b g -- generateBoardWithAtLeastNHints n g
   where
     (b, g) = randomBoard gen

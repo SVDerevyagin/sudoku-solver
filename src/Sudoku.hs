@@ -3,12 +3,14 @@ module Sudoku
   ( module Sudoku.Types
   , module Sudoku.Utils
   , module Sudoku.Solver
+  , module Sudoku.Generator
   -- * Testing
   , testBoard
   , hardBoard
   , impossibleBoard
   ) where
 
+import Sudoku.Generator
 import Sudoku.Solver
 import Sudoku.Types
 import Sudoku.Utils

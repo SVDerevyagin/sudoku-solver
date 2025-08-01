@@ -6,11 +6,11 @@ Description: Defines function `solve`
 The functions that solves a Sudoku puzzle
 -}
 module Sudoku.Solver
-  ( solve
+  ( solve, solvable
   ) where
 
 import Sudoku.Types (Board, isCellEmpty, setCell)
-import Sudoku.Utils (findIndex, possibleValues, emptyCellsAmount)
+import Sudoku.Utils (findIndex, possibleValues, emptyCellsAmount, sudokuRules)
 
 
 -- | Finds next empty cell and fills it with all possible values
@@ -40,3 +40,10 @@ solve b = case solveAll b of
   []    -> Left "No solution found"
   [res] -> Right res
   _     -> Left "Too many solutions found"
+
+-- | The puzzle has at least one solution
+solvable :: Board -> Bool
+solvable b = case solveAll b of
+  [_] -> True
+  _   -> False
+

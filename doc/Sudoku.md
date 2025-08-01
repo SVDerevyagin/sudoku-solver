@@ -117,6 +117,20 @@ Helper function `checkAll` is just a specialized wrapper around standard functio
 
 Each of the functions `_IsCorrect` checks if all non-empty cells have unique values.
 
+### Random
+
+Function 
+```haskell
+randomElement :: RandomGen gen => [a] -> gen -> (Maybe a, gen)
+```
+returns or a random element from a list (`Nothing` if the list is empty).
+
+Function
+```haskell
+shuffle :: RandomGen gen => [a] -> gen -> (Maybe a, gen)
+```
+randomly changes the order of list elements.
+
 ### Miscellaneous
 
 Function
@@ -133,6 +147,12 @@ finds all elements that satisfy a condition.
 
 Function
 ```haskell
+possibleValues :: Board -> (Cell -> Bool) -> [CellValue]
+```
+returns all allowed in a cell values.
+
+Function
+```haskell
 possibleValues :: Board -> (Row, Col) -> [CellValue]
 ```
 returns all values allowed in a cell.
@@ -146,8 +166,20 @@ calculates the amount of empty cells in a puzzle.
 
 ## `Sudoku.Solver` module
 
-The algorithm:
+The `solve` algorithm:
 
 1. Find an empty cell
 2. Fill the empty cell with every possible values (creates a list of `Board`s)
 3. Repeat for all new `Board`s 
+
+The function `solvable` checks if a `Board` has exactly one solution.
+
+
+## `Sudoku.Generator` module
+
+This module contains functions for generating new puzzles. 
+The generating algorithm:
+
+1. Generate a fully filled board.
+2. Remove some values from the board.
+

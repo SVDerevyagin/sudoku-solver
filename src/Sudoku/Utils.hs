@@ -9,8 +9,9 @@ Utility functions for testing and solving
 module Sudoku.Utils
   ( printBoard
   , sudokuRules
-  , findIndex, possibleValues
+  , findIndex, findIndices, possibleValues
   , emptyCellsAmount
+  , randomElement, shuffle
   ) where
 
 import Data.Finite (Finite)
@@ -20,6 +21,7 @@ import System.Console.ANSI (Color(..), SGR(..), ConsoleLayer(..), ColorIntensity
 
 import Sudoku.Types (Board(..), Row, Col, Block, Cell(..), toDigit, rowCells, blockCells, colCells, CellValue, getCellValue, isCellEmpty)
 import Data.Array (assocs)
+import System.Random (RandomGen(..), Random (randomR))
 
 -- | Print a 'Board' on screen
 printBoard :: Board -> IO ()
@@ -161,3 +163,23 @@ possibleValues b (r,c) = [0..8] \\ used
 -- | Returns the amount of empty cells
 emptyCellsAmount :: Board -> Int
 emptyCellsAmount = length . (`findIndices` isCellEmpty)
+
+
+-- | Returns a random element from a list
+randomElement :: RandomGen gen => [a] -> gen -> (Maybe a, gen)
+randomElement [] g = (Nothing, g)
+randomElement xs g = (Just $ xs !! i, g')
+  where
+    n = length xs
+    (i, g') = randomR (0, n-1) g
+
+-- | Shuffles a list
+shuffle :: RandomGen gen => [a] -> gen -> ([a], gen)
+shuffle []     gen = ([], gen)
+shuffle (x:[]) gen = ([x], gen)
+shuffle xs     gen = (v:zs, g2)
+  where
+    (i, g1) = randomR (0, length xs-1) gen
+    v  = xs !! i
+    ys = take i xs ++ drop (i+1) xs
+    (zs, g2) = shuffle ys g1

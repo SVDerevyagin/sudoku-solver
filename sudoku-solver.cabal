@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Sudoku
+      Sudoku.Generator
       Sudoku.Solver
       Sudoku.Types
       Sudoku.Utils
@@ -41,6 +42,7 @@ library
     , array >=0.5.8 && <0.6
     , base >=4.7 && <5
     , finite-typelits >=0.2.1 && <0.3
+    , random ==1.3.*
   default-language: Haskell2010
 
 executable sudoku-solver

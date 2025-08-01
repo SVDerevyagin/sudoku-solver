@@ -2,6 +2,7 @@
 module Sudoku
   ( module Sudoku.Types
   , module Sudoku.Utils
+  , module Sudoku.Solver
   -- * Testing
   , testBoard
   , hardBoard

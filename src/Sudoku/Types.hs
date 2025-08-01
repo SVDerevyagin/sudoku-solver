@@ -18,7 +18,7 @@ module Sudoku.Types
   , Board(..)
   , mkBoard, sameBoard
   , rowCells, colCells, blockCells
-  , getCell, setCell, eraseCell
+  , getCell, setCell, fillCell, eraseCell, deleteCell
   ) where
 
 import Data.Array (Array, (!), (//), listArray)
@@ -122,11 +122,19 @@ setCell (Board b) ind val = case b ! ind of
   Given _ -> Board   b   -- the player can’t rewrite a given cell
   _       -> Board $ b // [(ind, Written val)]
 
+-- | Fills a cell (for puzzle generation)
+fillCell :: Board -> (Row, Col) -> CellValue -> Board
+fillCell (Board b) ind val = Board $ b // [(ind, Given val)]
+
 -- | Erases a cell
 eraseCell :: Board -> (Row, Col) -> Board
 eraseCell (Board b) ind = case b ! ind of
   Written _ -> Board $ b // [(ind, EmptyCell)]
   _         -> Board   b
+
+-- | Erases a cell (for puzzle generation)
+deleteCell :: Board -> (Row, Col) -> Board
+deleteCell (Board b) ind = Board $ b // [(ind, EmptyCell)]
 
 -- | Checks if two boards are the same
 sameBoard :: Board -> Board -> Bool

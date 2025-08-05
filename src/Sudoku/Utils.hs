@@ -9,19 +9,18 @@ Utility functions for testing and solving
 module Sudoku.Utils
   ( printBoard
   , sudokuRules
-  , findIndex, findIndices, possibleValues
+  , possibleValues
   , emptyCellsAmount
   , randomElement, shuffle
   ) where
 
 import Data.Finite (Finite)
 import Data.List (intercalate, sort, (\\))
-import Data.Maybe (catMaybes, listToMaybe, mapMaybe)
+import Data.Maybe (catMaybes, mapMaybe)
 import System.Console.ANSI (Color(..), SGR(..), ConsoleLayer(..), ColorIntensity (..), setSGRCode)
 
-import Sudoku.Types ( Board(..), Row, Col, Block, Cell(..), CellValue
-                    , toDigit, rowCells, blockCells, colCells, getCellValue, isCellEmpty, getCellValue)
-import Data.Array (assocs)
+import Sudoku.Types ( Board, Row, Col, Block, Cell(..), CellValue
+                    , toDigit, rowCells, blockCells, colCells, getCellValue, isCellEmpty, getCellValue, findIndices)
 import System.Random (RandomGen(..), Random (randomR))
 
 -- | Print a 'Board' on screen
@@ -136,21 +135,6 @@ sudokuRules b = rowsAreCorrect b
              && colsAreCorrect b
              && blocksAreCorrect b
 
--- | Finds an element in a 'Board' that satisfies a condition
-findIndex :: Board
-          -> (Cell -> Bool)  -- ^ the condition
-          -> Maybe (Row, Col)
-findIndex (Board arr) f = listToMaybe [ i | (i, x) <- assocs arr
-                                          , f x
-                                      ]
-
--- | Finds all elements in a 'Board' that satisfy a condition
-findIndices :: Board
-            -> (Cell -> Bool)  -- ^ the condition
-            -> [(Row, Col)]
-findIndices (Board arr) f = [ i | (i, x) <- assocs arr
-                                , f x
-                            ]
 
 -- | Returns all possible values that could be placed at ('Row', 'Cell')
 possibleValues :: Board -> (Row, Col) -> [CellValue]
@@ -176,11 +160,12 @@ randomElement xs g = (Just $ xs !! i, g')
 
 -- | Shuffles a list
 shuffle :: RandomGen gen => [a] -> gen -> ([a], gen)
-shuffle []     gen = ([], gen)
-shuffle (x:[]) gen = ([x], gen)
-shuffle xs     gen = (v:zs, g2)
+shuffle []  gen = ([], gen)
+shuffle [x] gen = ([x], gen)
+shuffle xs  gen = (v:zs, g2)
   where
     (i, g1) = randomR (0, length xs-1) gen
     v  = xs !! i
     ys = take i xs ++ drop (i+1) xs
     (zs, g2) = shuffle ys g1
+

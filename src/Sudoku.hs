@@ -1,4 +1,11 @@
 
+{-|
+Module: Sudoku
+Description: Imports all library modules and a few testing puzzles
+
+Imports all library modules and a few testing puzzles
+-}
+
 module Sudoku
   ( module Sudoku.Types
   , module Sudoku.Utils

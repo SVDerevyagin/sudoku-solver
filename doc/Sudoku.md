@@ -1,4 +1,4 @@
-# Sudoku solver documentation
+# Sudoku solver
 
 ## `Sudoku` module
 

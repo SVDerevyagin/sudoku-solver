@@ -84,6 +84,38 @@ createBoardWithBlock cells =
 
 main :: IO ()
 main = hspec $ do
+  describe "setCell" $ do
+    it "changes an empty value" $
+      property $ \seed ->
+        let (board, _) = generateEasyBoard $ mkStdGen seed
+            Just (r,c) = findIndex board isCellEmpty
+            newV = 1
+            newB = setCell board (r,c) newV
+        in getCell newB r c `shouldBe` Just newV
+
+    it "can’t change a 'Given' value" $
+      property $ \(FullBoard b) ->
+        let Just v = getCell b 0 0
+            val = v + 1
+            newB = setCell b (0,0) val
+        in newB `shouldBe` b
+
+  describe "eraseCell" $ do
+    it "erases a 'Written' value" $
+      property $ \seed ->
+        let (board, _) = generateEasyBoard $ mkStdGen seed
+            Right b = solve board
+            Just (r,c) = findIndex board isCellEmpty
+            newB = eraseCell b (r,c)
+        in (getCell newB r c `shouldBe` Nothing) <>
+           (newB `shouldNotBe` b)
+    it "can’t erase a 'Given' value" $
+      property $ \(FullBoard board) ->
+        let i@(r,c) = (0,0)
+            b = eraseCell board i
+        in (getCell b r c `shouldNotBe` Nothing) <>
+           (b `shouldBe` board)
+
   describe "sudokuRules" $ do
     it "returns 'True' for valid rows" $
       property $ \(ValidRow row) ->

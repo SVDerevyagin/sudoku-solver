@@ -1,7 +1,7 @@
 
 {-|
 Module: Sudoku.Solver
-Description: Defines function `solve`
+Description: Defines functions `solve` and `solvable`
 
 The functions that solves a Sudoku puzzle
 -}
@@ -9,8 +9,8 @@ module Sudoku.Solver
   ( solve, solvable
   ) where
 
-import Sudoku.Types (Board, isCellEmpty, setCell)
-import Sudoku.Utils (findIndex, possibleValues, emptyCellsAmount, sudokuRules)
+import Sudoku.Types (Board, isCellEmpty, setCell, findIndex)
+import Sudoku.Utils (possibleValues, emptyCellsAmount, sudokuRules)
 
 
 -- | Finds next empty cell and fills it with all possible values

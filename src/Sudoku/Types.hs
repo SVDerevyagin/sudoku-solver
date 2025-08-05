@@ -13,16 +13,19 @@ module Sudoku.Types
   , toDigit, fromDigit
   , Cell(..)
   , isCellEmpty, isCellNotEmpty, getCellValue
+  , isCellRight
     -- * Board
   , Row, Col, Block
-  , Board(..)
+  , Board --(..)
   , mkBoard, sameBoard
   , rowCells, colCells, blockCells
-  , getCell, setCell, fillCell, eraseCell, deleteCell
+  , (#), getCell, setCell, fillCell, eraseCell, deleteCell, eraseWrittenCells
+  , findIndex, findIndices
   ) where
 
-import Data.Array (Array, (!), (//), listArray)
+import Data.Array (Array, (!), (//), listArray, indices, assocs)
 import Data.Finite (Finite, finite, getFinite)
+import Data.Maybe (mapMaybe, listToMaybe)
 
 
 --------------------------------------------------------------------------------
@@ -66,6 +69,21 @@ getCellValue :: Cell -> Maybe CellValue
 getCellValue EmptyCell = Nothing
 getCellValue (Given v) = Just v
 getCellValue (Written v) = Just v
+
+
+-- | Checks if a cell is not violating sudoku rules
+isCellRight :: Board -> (Row, Col) -> Bool
+isCellRight b@(Board arr) (r,c) = case val of
+  Nothing -> True
+  Just v  -> v `notElem` used
+  where
+    val = getCell b (r,c)
+    row = [ arr ! (r, c') | c' <- [minBound .. maxBound], c' /= c ]
+    col = [ arr ! (r', c) | r' <- [minBound .. maxBound], r' /= r ]
+    baseRow = finite $ 3 * (getFinite r `div` 3)
+    baseCol = finite $ 3 * (getFinite c `div` 3)
+    bl = [ arr ! (r', c') | r' <- [baseRow .. baseRow+2], r' /= r, c' <- [baseCol .. baseCol+2], c' /= c ]
+    used = mapMaybe getCellValue $ row ++ col ++ bl
 
 
 --------------------------------------------------------------------------------
@@ -112,9 +130,14 @@ blockCells (Board b) block =
     baseRow = 3 * (block `div` 3)
     baseCol = 3 * (block `mod` 3)
 
+infixl 9 #
+
+(#) :: Board -> (Row, Col) -> Cell
+(Board b) # ind = b ! ind
+
 -- | Gets the value of a cell
-getCell :: Board -> Row -> Col -> Maybe CellValue
-getCell (Board b) row col = getCellValue $ b ! (row, col)
+getCell :: Board -> (Row, Col) -> Maybe CellValue
+getCell (Board b) ind = getCellValue $ b ! ind
 
 -- | Updates a cell when the player puts a number in it
 setCell :: Board -> (Row, Col) -> CellValue -> Board
@@ -136,10 +159,30 @@ eraseCell (Board b) ind = case b ! ind of
 deleteCell :: Board -> (Row, Col) -> Board
 deleteCell (Board b) ind = Board $ b // [(ind, EmptyCell)]
 
+-- | Erases all 'Written' 'Cell's
+eraseWrittenCells :: Board -> Board
+eraseWrittenCells b@(Board arr) = foldl eraseCell b (indices arr)
+
 -- | Checks if two boards are the same
 sameBoard :: Board -> Board -> Bool
 b1 `sameBoard` b2
-  = and [ getCell b1 r c == getCell b2 r c
+  = and [ getCell b1 (r,c) == getCell b2 (r,c)
         | r <- [minBound..maxBound]
         , c <- [minBound..maxBound]
         ]
+
+-- | Finds an element in a 'Board' that satisfies a condition
+findIndex :: Board
+          -> (Cell -> Bool)  -- ^ the condition
+          -> Maybe (Row, Col)
+findIndex (Board arr) f = listToMaybe [ i | (i, x) <- assocs arr
+                                          , f x
+                                      ]
+
+-- | Finds all elements in a 'Board' that satisfy a condition
+findIndices :: Board
+            -> (Cell -> Bool)  -- ^ the condition
+            -> [(Row, Col)]
+findIndices (Board arr) f = [ i | (i, x) <- assocs arr
+                                , f x
+                            ]

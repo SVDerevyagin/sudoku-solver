@@ -13,16 +13,19 @@ module Sudoku.Generator
   , randomBoard, removeNCells
   ) where
 
-import Sudoku.Types (Board(..), Cell (..), fillCell, isCellEmpty, isCellNotEmpty, deleteCell)
-import Sudoku.Utils (findIndices, findIndex, shuffle, possibleValues, emptyCellsAmount)
+import Sudoku.Types (Board, Cell (..), fillCell, isCellEmpty, isCellNotEmpty, deleteCell, findIndex, findIndices, mkBoard)
+import Sudoku.Utils (shuffle, possibleValues, emptyCellsAmount)
 import Sudoku.Solver (solvable)
 import System.Random (RandomGen(..), Random(..))
-import Data.Array (listArray)
 
 
 -- | Empty board, generating a new puzzle starts from filling up this
 emptyBoard :: Board
-emptyBoard = Board $ listArray (minBound, maxBound) $ repeat EmptyCell
+emptyBoard = case eb of
+  Right b -> b
+  Left s  -> error s
+  where
+    eb = mkBoard $ replicate 9 $ replicate 9 EmptyCell
 
 -- | Generates a randomly filled board
 randomBoard :: RandomGen gen => gen -> (Board, gen)
@@ -32,7 +35,7 @@ randomBoard gen = case bs of
   where
     (bs, g) = fillBoard 81 [emptyBoard] gen
 
--- | Randomly fills 'n' empty cells of a board
+-- | Randomly fills *n* empty cells of a board
 fillBoard :: RandomGen gen => Int -> [Board] -> gen -> ([Board], gen)
 fillBoard 0 bs gen = (bs, gen)
 fillBoard n bs gen = fillBoard (n-1) (concat newB) g2
@@ -61,7 +64,7 @@ removeCell b gen = go nonEmpty
                 in if solvable newB then (Just newB, g1)
                    else go is
 
--- | Removes 'n' cells if possible
+-- | Removes =n= cells if possible
 removeNCells :: RandomGen gen => Int -> Board -> gen -> (Board, gen)
 removeNCells n b gen
   | emptyCellsAmount b == n = (b, gen)
@@ -104,4 +107,3 @@ generateHardBoard :: RandomGen gen => gen -> (Board, gen)
 generateHardBoard gen = removeMaxCells b g -- generateBoardWithAtLeastNHints n g
   where
     (b, g) = randomBoard gen
-    --(n, g) = randomR (21, 26) gen
